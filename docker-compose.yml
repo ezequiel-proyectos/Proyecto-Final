@@ -1,0 +1,198 @@
+version: "3.9"
+
+networks:
+  food-net:
+    driver: bridge
+
+services:
+  # ─── Bases de datos ───────────────────────────────────────────
+  mysql-users:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: users_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3307:3306"
+    volumes:
+      - users-data:/var/lib/mysql
+    networks:
+      - food-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uappuser", "-papppass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-catalog:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: catalog_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3308:3306"
+    volumes:
+      - catalog-data:/var/lib/mysql
+    networks:
+      - food-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uappuser", "-papppass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-orders:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: orders_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3309:3306"
+    volumes:
+      - orders-data:/var/lib/mysql
+    networks:
+      - food-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uappuser", "-papppass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-payments:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: payments_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3310:3306"
+    volumes:
+      - payments-data:/var/lib/mysql
+    networks:
+      - food-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uappuser", "-papppass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Microservicios ───────────────────────────────────────────
+  users-service:
+    build: ./services/users
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DB_HOST: mysql-users
+      DB_PORT: 3306
+      DB_NAME: users_db
+      DB_USER: appuser
+      DB_PASS: apppass
+      JWT_SECRET: super_secret_key_change_in_prod
+    depends_on:
+      mysql-users:
+        condition: service_healthy
+    networks:
+      - food-net
+    restart: on-failure
+
+  catalog-service:
+    build: ./services/catalog
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      DB_HOST: mysql-catalog
+      DB_PORT: 3306
+      DB_NAME: catalog_db
+      DB_USER: appuser
+      DB_PASS: apppass
+    depends_on:
+      mysql-catalog:
+        condition: service_healthy
+    networks:
+      - food-net
+    restart: on-failure
+
+  orders-service:
+    build: ./services/orders
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      DB_HOST: mysql-orders
+      DB_PORT: 3306
+      DB_NAME: orders_db
+      DB_USER: appuser
+      DB_PASS: apppass
+      USERS_SERVICE_URL: http://users-service:3001
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+      PAYMENTS_SERVICE_URL: http://payments-service:3004
+    depends_on:
+      mysql-orders:
+        condition: service_healthy
+    networks:
+      - food-net
+    restart: on-failure
+
+  payments-service:
+    build: ./services/payments
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+      DB_HOST: mysql-payments
+      DB_PORT: 3306
+      DB_NAME: payments_db
+      DB_USER: appuser
+      DB_PASS: apppass
+    depends_on:
+      mysql-payments:
+        condition: service_healthy
+    networks:
+      - food-net
+    restart: on-failure
+
+  notifications-service:
+    build: ./services/notifications
+    ports:
+      - "3005:3005"
+    environment:
+      PORT: 3005
+    networks:
+      - food-net
+    restart: on-failure
+
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      USERS_SERVICE_URL: http://users-service:3001
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+      ORDERS_SERVICE_URL: http://orders-service:3003
+      PAYMENTS_SERVICE_URL: http://payments-service:3004
+      NOTIFICATIONS_SERVICE_URL: http://notifications-service:3005
+      JWT_SECRET: super_secret_key_change_in_prod
+    depends_on:
+      - users-service
+      - catalog-service
+      - orders-service
+      - payments-service
+      - notifications-service
+    networks:
+      - food-net
+    restart: on-failure
+
+volumes:
+  users-data:
+  catalog-data:
+  orders-data:
+  payments-data:

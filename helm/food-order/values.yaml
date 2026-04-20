@@ -1,0 +1,72 @@
+# ── Values globales del chart paraguas food-order ─────────────────
+# Aquí puedes sobreescribir cualquier valor de los sub-charts.
+# Formato: <nombre-subchart>.<clave>: <valor>
+
+# Nombre del registry de DigitalOcean (reemplaza con el tuyo)
+registryName: &registry "tu-registry-do"
+
+# ── users ──────────────────────────────────────────────────────────
+users:
+  replicaCount: 2
+  image:
+    repository: registry.digitalocean.com/tu-registry-do/food-order-users
+    tag: "latest"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+
+# ── catalog ────────────────────────────────────────────────────────
+catalog:
+  replicaCount: 2
+  image:
+    repository: registry.digitalocean.com/tu-registry-do/food-order-catalog
+    tag: "latest"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+
+# ── orders ─────────────────────────────────────────────────────────
+orders:
+  replicaCount: 2
+  image:
+    repository: registry.digitalocean.com/tu-registry-do/food-order-orders
+    tag: "latest"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 8
+
+# ── payments ───────────────────────────────────────────────────────
+payments:
+  replicaCount: 2
+  image:
+    repository: registry.digitalocean.com/tu-registry-do/food-order-payments
+    tag: "latest"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+
+# ── notifications ──────────────────────────────────────────────────
+notifications:
+  replicaCount: 1
+  image:
+    repository: registry.digitalocean.com/tu-registry-do/food-order-notifications
+    tag: "latest"
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+
+# ── api-gateway ────────────────────────────────────────────────────
+api-gateway:
+  replicaCount: 2
+  image:
+    repository: registry.digitalocean.com/tu-registry-do/food-order-api-gateway
+    tag: "latest"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6

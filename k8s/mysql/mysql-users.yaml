@@ -1,0 +1,85 @@
+# mysql-users.yaml
+# StatefulSet de MySQL para el servicio de usuarios.
+# Replica este archivo para cada servicio cambiando el nombre y la DB.
+# ─────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-users-pvc
+  namespace: production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: do-block-storage
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-users
+  namespace: production
+spec:
+  serviceName: mysql-users
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-users
+  template:
+    metadata:
+      labels:
+        app: mysql-users
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: users_db
+            - name: MYSQL_USER
+              value: appuser
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: users-secret
+                  key: DB_PASS
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: users-secret
+                  key: DB_PASS
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uappuser", "-p$(MYSQL_PASSWORD)"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mysql-users-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-users
+  namespace: production
+spec:
+  type: ClusterIP
+  selector:
+    app: mysql-users
+  ports:
+    - port: 3306
+      targetPort: 3306

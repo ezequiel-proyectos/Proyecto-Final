@@ -1,0 +1,44 @@
+replicaCount: 2
+
+image:
+  repository: registry.digitalocean.com/REGISTRY_NAME/food-order-users
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 3001
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "300m"
+    memory: "256Mi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+env:
+  PORT: "3001"
+  DB_HOST: "mysql-users"
+  DB_PORT: "3306"
+  DB_NAME: "users_db"
+  DB_USER: "appuser"
+
+# Secrets se pasan por Kubernetes Secret (no en values)
+secretName: users-secret
+
+livenessProbe:
+  path: /health
+  initialDelaySeconds: 20
+  periodSeconds: 15
+
+readinessProbe:
+  path: /health
+  initialDelaySeconds: 10
+  periodSeconds: 10

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: notifications
+description: Microservicio de notificaciones — Food Order System
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

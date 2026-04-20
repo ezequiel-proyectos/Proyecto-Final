@@ -1,0 +1,117 @@
+# ServiceMonitor — le dice a Prometheus qué servicios scrapear y con qué frecuencia.
+# Aplicar con: kubectl apply -f monitoring/prometheus/service-monitors.yaml
+# ─────────────────────────────────────────────────────────────────
+
+# ── API Gateway ───────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: api-gateway-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [production, staging]
+  selector:
+    matchLabels:
+      app: api-gateway
+  endpoints:
+    - port: "8080"
+      path: /metrics
+      interval: 15s
+---
+# ── Users ─────────────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: users-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [production, staging]
+  selector:
+    matchLabels:
+      app: users
+  endpoints:
+    - port: "3001"
+      path: /metrics
+      interval: 15s
+---
+# ── Catalog ───────────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: catalog-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [production, staging]
+  selector:
+    matchLabels:
+      app: catalog
+  endpoints:
+    - port: "3002"
+      path: /metrics
+      interval: 15s
+---
+# ── Orders ────────────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: orders-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [production, staging]
+  selector:
+    matchLabels:
+      app: orders
+  endpoints:
+    - port: "3003"
+      path: /metrics
+      interval: 15s
+---
+# ── Payments ──────────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: payments-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [production, staging]
+  selector:
+    matchLabels:
+      app: payments
+  endpoints:
+    - port: "3004"
+      path: /metrics
+      interval: 15s
+---
+# ── Notifications ─────────────────────────────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: notifications-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [production, staging]
+  selector:
+    matchLabels:
+      app: notifications
+  endpoints:
+    - port: "3005"
+      path: /metrics
+      interval: 15s

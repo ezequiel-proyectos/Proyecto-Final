@@ -1,0 +1,6 @@
+apiVersion: v2
+name: orders
+description: Microservicio de pedidos — Food Order System
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

@@ -1,0 +1,39 @@
+replicaCount: 1
+
+image:
+  repository: registry.digitalocean.com/REGISTRY_NAME/food-order-notifications
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 3005
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
+    cpu: "150m"
+    memory: "128Mi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+
+env:
+  PORT: "3005"
+
+secretName: notifications-secret
+
+livenessProbe:
+  path: /health
+  initialDelaySeconds: 10
+  periodSeconds: 15
+
+readinessProbe:
+  path: /health
+  initialDelaySeconds: 5
+  periodSeconds: 10

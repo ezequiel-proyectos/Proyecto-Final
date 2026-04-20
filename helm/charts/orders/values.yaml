@@ -1,0 +1,45 @@
+replicaCount: 2
+
+image:
+  repository: registry.digitalocean.com/REGISTRY_NAME/food-order-orders
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 3003
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "300m"
+    memory: "256Mi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+
+env:
+  PORT: "3003"
+  DB_HOST: "mysql-orders"
+  DB_PORT: "3306"
+  DB_NAME: "orders_db"
+  DB_USER: "appuser"
+  CATALOG_SERVICE_URL: "http://catalog-svc:3002"
+  USERS_SERVICE_URL: "http://users-svc:3001"
+
+secretName: orders-secret
+
+livenessProbe:
+  path: /health
+  initialDelaySeconds: 20
+  periodSeconds: 15
+
+readinessProbe:
+  path: /health
+  initialDelaySeconds: 10
+  periodSeconds: 10
