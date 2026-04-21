@@ -42,3 +42,6 @@ readinessProbe:
   path: /health
   initialDelaySeconds: 8
   periodSeconds: 10
+ingress:
+  enabled: true
+  host: "api.foodorder.example.com"
