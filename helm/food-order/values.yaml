@@ -3,70 +3,100 @@
 # Formato: <nombre-subchart>.<clave>: <valor>
 
 # Nombre del registry de DigitalOcean (reemplaza con el tuyo)
-registryName: &registry "tu-registry-do"
+registryName: &registry "doctl registry get"
 
-# ── users ──────────────────────────────────────────────────────────
+# ── users ──────────────────────────────────────────────
 users:
-  replicaCount: 2
+  replicaCount: 1
   image:
-    repository: registry.digitalocean.com/tu-registry-do/food-order-users
+    repository: registry.digitalocean.com/food-reg/food-order-users
     tag: "latest"
   autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 5
+    enabled: false
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
 
-# ── catalog ────────────────────────────────────────────────────────
+# ── catalog ────────────────────────────────────────────
 catalog:
-  replicaCount: 2
+  replicaCount: 1
   image:
-    repository: registry.digitalocean.com/tu-registry-do/food-order-catalog
+    repository: registry.digitalocean.com/food-reg/food-order-catalog
     tag: "latest"
   autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 5
+    enabled: false
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
 
-# ── orders ─────────────────────────────────────────────────────────
+# ── orders ─────────────────────────────────────────────
 orders:
-  replicaCount: 2
+  replicaCount: 1
   image:
-    repository: registry.digitalocean.com/tu-registry-do/food-order-orders
+    repository: registry.digitalocean.com/food-reg/food-order-orders
     tag: "latest"
   autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 8
+    enabled: false
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
 
-# ── payments ───────────────────────────────────────────────────────
+# ── payments ───────────────────────────────────────────
 payments:
-  replicaCount: 2
+  replicaCount: 1
   image:
-    repository: registry.digitalocean.com/tu-registry-do/food-order-payments
+    repository: registry.digitalocean.com/food-reg/food-order-payments
     tag: "latest"
   autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 5
+    enabled: false
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
 
-# ── notifications ──────────────────────────────────────────────────
+# ── notifications ──────────────────────────────────────
 notifications:
   replicaCount: 1
   image:
-    repository: registry.digitalocean.com/tu-registry-do/food-order-notifications
+    repository: registry.digitalocean.com/food-reg/food-order-notifications
     tag: "latest"
   autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 3
+    enabled: false
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
 
-# ── api-gateway ────────────────────────────────────────────────────
+# ── api-gateway ────────────────────────────────────────
 api-gateway:
-  replicaCount: 2
+  replicaCount: 1
   image:
-    repository: registry.digitalocean.com/tu-registry-do/food-order-api-gateway
+    repository: registry.digitalocean.com/food-reg/food-order-api-gateway
     tag: "latest"
   autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 6
+    enabled: false
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi

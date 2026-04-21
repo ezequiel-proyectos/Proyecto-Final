@@ -5,23 +5,22 @@ type: application
 version: 0.1.0
 appVersion: "1.0.0"
 
-# Dependencias — cada microservicio como sub-chart
 dependencies:
   - name: users
     version: "0.1.0"
-    repository: "file://../users"
+    repository: "file://../charts/users"
   - name: catalog
     version: "0.1.0"
-    repository: "file://../catalog"
+    repository: "file://../charts/catalog"
   - name: orders
     version: "0.1.0"
-    repository: "file://../orders"
+    repository: "file://../charts/orders"
   - name: payments
     version: "0.1.0"
-    repository: "file://../payments"
+    repository: "file://../charts/payments"
   - name: notifications
     version: "0.1.0"
-    repository: "file://../notifications"
+    repository: "file://../charts/notifications"
   - name: api-gateway
     version: "0.1.0"
-    repository: "file://../api-gateway"
+    repository: "file://../charts/api-gateway"
