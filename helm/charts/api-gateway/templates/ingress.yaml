@@ -13,7 +13,7 @@ spec:
         - api.foodorder.example.com
       secretName: foodorder-tls
   rules:
-    - host: api.foodorder.example.com
+    - host: api-staging.foodorder.local
       http:
         paths:
           - path: /

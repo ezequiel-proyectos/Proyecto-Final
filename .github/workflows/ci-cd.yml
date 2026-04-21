@@ -103,7 +103,9 @@ jobs:
           cd helm
           helm dependency update food-order
           helm upgrade --install food-order-staging ./food-order \
-            --namespace staging --create-namespace \
+            --namespace staging \
+            --create-namespace \
+            --set api-gateway.ingress.enabled=false \
             --set users.image.tag="${SHORT_SHA}" \
             --set catalog.image.tag="${SHORT_SHA}" \
             --set orders.image.tag="${SHORT_SHA}" \
