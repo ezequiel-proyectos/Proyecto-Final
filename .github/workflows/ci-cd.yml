@@ -97,6 +97,12 @@ jobs:
           kubectl create secret generic payments-secret --namespace=staging --from-literal=DB_PASS="${{ secrets.DB_PASS }}" --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" --dry-run=client -o yaml | kubectl apply -f -
           kubectl create secret generic notifications-secret --namespace=staging --from-literal=PLACEHOLDER="none" --dry-run=client -o yaml | kubectl apply -f -
           kubectl create secret generic api-gateway-secret --namespace=staging --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Limpiar recursos huérfanos
+        run: |
+          kubectl delete deployment food-order-staging -n staging --ignore-not-found=true
+          kubectl delete service food-order-staging-svc -n staging --ignore-not-found=true
+
       - name: Helm upgrade Staging
         run: |
           SHORT_SHA=${{ steps.sha.outputs.short_sha }}
@@ -105,6 +111,8 @@ jobs:
           helm upgrade --install food-order-staging ./food-order \
             --namespace staging \
             --create-namespace \
+            --cleanup-on-fail \
+            --force \
             --set api-gateway.ingress.enabled=false \
             --set users.image.tag="${SHORT_SHA}" \
             --set catalog.image.tag="${SHORT_SHA}" \
